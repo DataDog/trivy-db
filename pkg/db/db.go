@@ -163,7 +163,12 @@ func (dbc Config) get(bktNames []string, key string) (value []byte, err error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get data from db: %w", err)
 	}
-	return value, nil
+
+	// Copy the byte slice so it can be used outside of the current transaction
+	copiedValue := make([]byte, len(value))
+	copy(copiedValue, value)
+
+	return copiedValue, nil
 }
 
 type Value struct {
@@ -216,8 +221,8 @@ func (dbc Config) forEach(bktNames []string) (map[string]Value, error) {
 			}
 
 			err = bkt.ForEach(func(k, v []byte) error {
+				// Copy the byte slice so it can be used outside of the current transaction
 				copiedContent := make([]byte, len(v))
-
 				copy(copiedContent, v)
 
 				values[string(k)] = Value{
