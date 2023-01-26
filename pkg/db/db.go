@@ -216,12 +216,17 @@ func (dbc Config) forEach(bktNames []string) (map[string]Value, error) {
 			}
 
 			err = bkt.ForEach(func(k, v []byte) error {
+				copiedContent := make([]byte, len(v))
+
+				copy(copiedContent, v)
+
 				values[string(k)] = Value{
 					Source:  source,
-					Content: v,
+					Content: copiedContent,
 				}
 				return nil
 			})
+
 			if err != nil {
 				return xerrors.Errorf("db foreach error: %w", err)
 			}
