@@ -157,18 +157,19 @@ func (dbc Config) get(bktNames []string, key string) (value []byte, err error) {
 				return nil
 			}
 		}
-		value = bkt.Get([]byte(key))
+		dbValue := bkt.Get([]byte(key))
+
+		// Copy the byte slice so it can be used outside of the current transaction
+		value := make([]byte, len(dbValue))
+		copy(value, dbValue)
+
 		return nil
 	})
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get data from db: %w", err)
 	}
 
-	// Copy the byte slice so it can be used outside of the current transaction
-	copiedValue := make([]byte, len(value))
-	copy(copiedValue, value)
-
-	return copiedValue, nil
+	return value, nil
 }
 
 type Value struct {
