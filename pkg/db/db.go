@@ -160,7 +160,7 @@ func (dbc Config) get(bktNames []string, key string) (value []byte, err error) {
 		dbValue := bkt.Get([]byte(key))
 
 		// Copy the byte slice so it can be used outside of the current transaction
-		value := make([]byte, len(dbValue))
+		value = make([]byte, len(dbValue))
 		copy(value, dbValue)
 
 		return nil
